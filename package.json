@@ -1,0 +1,20 @@
+{
+  "name": "wargaopoly-62",
+  "version": "1.0.0",
+  "description": "Web Game Monopoli Edukasi Multiplayer Real-Time Hingga 10 Pemain (Tema Simulator Warga 62)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "monopoly",
+    "education",
+    "multiplayer",
+    "warga62",
+    "realtime",
+    "websocket"
+  ],
+  "author": "The Autonomous Development Team",
+  "license": "MIT"
+}

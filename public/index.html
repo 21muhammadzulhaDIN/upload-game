@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Wargaopoly Alam Nusantara 3D - Monopoli Edukasi 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top App Header -->
+  <header class="game-header">
+    <div class="logo-brand">
+      <span class="logo-badge">ALAM 3D</span>
+      <h1 class="logo-title">Wargaopoly</h1>
+    </div>
+
+    <div class="header-status-group">
+      <div class="room-chip" id="room-code-badge" style="display: none;" title="Klik untuk menyalin tautan undangan">
+        <span>Kamar:</span> <strong id="display-room-code">-</strong> 📋
+      </div>
+      <button class="icon-btn primary" id="btn-view-assets" style="display: none;" title="Buka Kartu Tanah & Ringkasan Aset">📋 Lihat Aset</button>
+      <button class="icon-btn" id="btn-camera-toggle" title="Ubah Sudut Pandang Kamera 3D / 2D">🎥 Sudut 3D</button>
+      <button class="icon-btn" id="btn-sound-toggle" title="Matikan/Nyalakan Suara">🔊 Suara</button>
+      <button class="icon-btn" id="btn-host-quiz-modal" style="display: none;">📚 Bank Soal</button>
+    </div>
+  </header>
+
+  <!-- SCREEN 1: LOBBY & SETUP -->
+  <main class="screen active" id="screen-lobby">
+    <div class="lobby-container">
+      <!-- Player Profile & Connect Card -->
+      <div class="card">
+        <h2 class="card-title">🌱 Masuk Warga Alam 3D</h2>
+        
+        <div class="form-group">
+          <label class="form-label" for="player-name-input">Nama Panggilan Petualang</label>
+          <input type="text" id="player-name-input" class="form-input" placeholder="Contoh: Pak RT / Mas Kuncoro" maxlength="16" value="Petualang Alam">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pilih Karakter Bidak 3D (10 Model Budaya)</label>
+          <div class="avatar-grid" id="avatar-selector">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px;" id="room-action-section">
+          <button class="btn btn-primary btn-block" id="btn-create-room">
+            🏠 Buat Room Baru (Host)
+          </button>
+
+          <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+            <input type="text" id="join-room-code-input" class="form-input" placeholder="KODE ROOM (5 Huruf)" style="text-transform: uppercase;">
+            <button class="btn btn-secondary" id="btn-join-room" style="white-space: nowrap;">
+              🚀 Gabung Room
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lobby Room Details & Host Controls -->
+      <div class="card" id="lobby-room-details" style="opacity: 0.6; pointer-events: none;">
+        <h2 class="card-title">
+          <span>👥 Warga di Kamar Nusantara</span>
+          <span style="font-size: 0.85rem; color: #10b981; margin-left: auto;" id="player-count-indicator">(0/10 Pemain)</span>
+        </h2>
+
+        <div class="player-slot-list" id="lobby-player-list">
+          <div style="text-align: center; color: var(--text-muted); padding: 30px;">
+            Buat atau gabung ke dalam room terlebih dahulu untuk mengumpulkan warga.
+          </div>
+        </div>
+
+        <!-- Host Settings Accordion -->
+        <div id="host-settings-panel" style="display: none; border-top: 1.5px solid #e2e8f0; padding-top: 14px; margin-top: 10px;">
+          <h4 style="font-size: 0.9rem; margin-bottom: 10px; color: #b45309;">⚙️ Pengaturan Room (Khusus Host)</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+            <div>
+              <label class="form-label">Modal Awal (Rp)</label>
+              <select id="setting-starting-cash" class="form-select">
+                <option value="2500000">Rp 2.500.000 (Santai)</option>
+                <option value="3500000" selected>Rp 3.500.000 (Standar)</option>
+                <option value="5000000">Rp 5.000.000 (Makmur)</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Gaji START (Rp)</label>
+              <select id="setting-salary" class="form-select">
+                <option value="800000">Rp 800.000</option>
+                <option value="1000000" selected>Rp 1.000.000 (Standar)</option>
+                <option value="1500000">Rp 1.500.000</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Batas Putaran Ronde</label>
+              <select id="setting-max-rounds" class="form-select">
+                <option value="15">15 Ronde (Mode Cepat)</option>
+                <option value="25" selected>25 Ronde (Standar)</option>
+                <option value="50">50 Ronde (Maraton)</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Timer Giliran</label>
+              <select id="setting-turn-timer" class="form-select">
+                <option value="25">25 Detik (Kilat)</option>
+                <option value="35" selected>35 Detik (Ideal)</option>
+                <option value="50">50 Detik (Santai)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;">
+          <button class="btn btn-secondary" id="btn-add-bot" style="display: none; flex: 1;">
+            🤖 + Tambah Bot Warga
+          </button>
+          <button class="btn btn-success" id="btn-start-game" style="display: none; flex: 2;">
+            ▶️ Mulai Permainan 3D
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- SCREEN 2: 3D NATURE BOARD VIEW -->
+  <main class="screen" id="screen-game">
+    <div class="game-viewport">
+      <!-- Left Panel: 10 Players Leaderboard & Activity Log -->
+      <aside class="game-sidebar">
+        <div class="card" style="padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h3 style="font-size: 0.9rem; font-weight: 800; color: #0f172a;">Warga Nusantara (10 Pemain)</h3>
+            <span style="font-size: 0.75rem; color: #0284c7; font-weight: 700;" id="round-indicator">Ronde 1/25</span>
+          </div>
+          <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 8px;">Ketuk kartu warga untuk menyorot seluruh kotanya di papan.</p>
+          <div class="player-card-strip" id="game-player-cards">
+            <!-- 10 Players cards rendered here -->
+          </div>
+        </div>
+
+        <!-- Live Activity Log -->
+        <div class="activity-card" id="activity-log-container">
+          <div style="font-weight: 800; color: #0f172a; margin-bottom: 6px; font-size: 0.78rem;">WARTA AKTIVITAS ALAM:</div>
+          <div id="activity-log-list"></div>
+        </div>
+      </aside>
+
+      <!-- Center 3D Nature Board -->
+      <section class="board-wrapper">
+        <div class="board-container" id="board-container">
+          <!-- 24 3D Nature City Tiles & 3D Center Hub generated via board_ui.js -->
+        </div>
+      </section>
+    </div>
+
+    <!-- Bottom Context Action HUD -->
+    <div class="bottom-hud">
+      <div class="hud-turn-info">
+        <div class="turn-pill wait-turn" id="turn-status-pill">
+          <span id="turn-icon">⏳</span> <span id="turn-text">Menunggu giliran warga...</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;" id="turn-timer-display"></div>
+      </div>
+
+      <div class="hud-action-buttons">
+        <!-- Pre-roll Buttons (Giliran Anda sebelum melempar dadu) -->
+        <button class="btn btn-secondary" id="btn-pre-transfer" style="display: none; padding: 10px 14px; font-size: 0.85rem;">
+          💸 Kirim/Minta Uang
+        </button>
+        <button class="btn btn-secondary" id="btn-pre-mortgage" style="display: none; padding: 10px 14px; font-size: 0.85rem;">
+          🏦 Gadai/Tebus
+        </button>
+        <button class="btn btn-secondary" id="btn-pre-trade" style="display: none; padding: 10px 14px; font-size: 0.85rem;">
+          🔄 Tukar Tanah
+        </button>
+
+        <!-- Main Roll Dice Button -->
+        <button class="btn btn-primary" id="btn-roll-dice" disabled>
+          🎲 Lempar Dadu 3D
+        </button>
+
+        <!-- Post-Roll Context Actions -->
+        <button class="btn btn-success" id="btn-buy-property" style="display: none;">
+          🏛️ Beli Tanah Kavling
+        </button>
+        <button class="btn btn-danger" id="btn-takeover-property" style="display: none;">
+          ⚔️ Ambil Alih Kota (2× Nilai)
+        </button>
+        <button class="btn btn-primary" id="btn-upgrade-property" style="display: none;">
+          🏗️ Bangun Gedung (Gajian)
+        </button>
+        <button class="btn btn-secondary" id="btn-end-turn" style="display: none;">
+          Selesai Giliran ⏭️
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: LIHAT ASET (ASSET INSPECTOR) -->
+  <div class="modal-overlay" id="modal-assets">
+    <div class="modal-content" style="max-width: 850px;">
+      <div class="modal-header">
+        <h3 class="modal-title">📋 Portofolio Tanah & Aset Anda</h3>
+        <button class="modal-close" id="btn-close-assets">&times;</button>
+      </div>
+
+      <div style="display: flex; gap: 14px; padding: 12px; background: #f0fdf4; border-radius: 12px; border: 1.5px solid #86efac; margin-bottom: 16px;">
+        <div><strong>Kas Tunai:</strong> <span id="asset-cash" style="color: #059669; font-weight: 800;">Rp 0</span></div>
+        <div><strong>Total Nilai Aset:</strong> <span id="asset-networth" style="color: #0284c7; font-weight: 800;">Rp 0</span></div>
+        <div><strong>Kota Dikuasai:</strong> <span id="asset-count" style="font-weight: 800;">0</span></div>
+      </div>
+
+      <div class="asset-cards-grid" id="asset-cards-list">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: KIRIM / MINTA UANG ANTARPEMAIN -->
+  <div class="modal-overlay" id="modal-money-transfer">
+    <div class="modal-content" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 class="modal-title">💸 Kirim / Minta Uang Antarpemain</h3>
+        <button class="modal-close" id="btn-close-money-modal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Pilih Aksi</label>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" id="btn-mode-send" style="flex: 1;">➡️ Kirim Uang (Transfer)</button>
+          <button class="btn btn-secondary" id="btn-mode-request" style="flex: 1;">⬅️ Minta Uang</button>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top: 14px;">
+        <label class="form-label">Pemain Target</label>
+        <select id="transfer-target-player" class="form-select"></select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nominal Uang (Rp)</label>
+        <input type="number" id="transfer-amount-input" class="form-input" placeholder="Contoh: 500000" min="50000" step="50000" value="250000">
+      </div>
+
+      <div id="transfer-direction-indicator" style="padding: 10px; background: #e0f2fe; border-radius: 8px; font-size: 0.85rem; color: #0369a1; margin-bottom: 16px; font-weight: 700;">
+        ➡️ Panah Transaksi: Anda → Penerima
+      </div>
+
+      <button class="btn btn-success btn-block" id="btn-execute-transfer">
+        Kirim Sekarang
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: GADAI & TEBUS KOTA -->
+  <div class="modal-overlay" id="modal-mortgage">
+    <div class="modal-content" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3 class="modal-title">🏦 Gadai & Tebus Kota ke Negara</h3>
+        <button class="modal-close" id="btn-close-mortgage">&times;</button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+        Gadai kota tanpa bangunan ke Negara seharga <strong>50% harga tanah</strong>. Selama digadai sewa tidak masuk. Tebus kembali sebesar <strong>60%</strong>.
+      </p>
+
+      <div style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;" id="mortgage-city-list">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: USUL TUKAR TANAH -->
+  <div class="modal-overlay" id="modal-trade">
+    <div class="modal-content" style="max-width: 580px;">
+      <div class="modal-header">
+        <h3 class="modal-title">🔄 Usul Tukar Tanah Antarpemain</h3>
+        <button class="modal-close" id="btn-close-trade">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Pemain Rekan Tukar</label>
+        <select id="trade-target-player" class="form-select"></select>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div>
+          <label class="form-label">Tanah yang Anda Berikan</label>
+          <select id="trade-give-tile" class="form-select"></select>
+        </div>
+        <div>
+          <label class="form-label">Tanah yang Anda Minta</label>
+          <select id="trade-get-tile" class="form-select"></select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Kompensasi Uang Tambahan (Rp - Opsional)</label>
+        <input type="number" id="trade-cash-input" class="form-input" placeholder="0" value="0">
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btn-submit-trade">
+        Kirim Kesepakatan Tukar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: PENDING MONEY REQUEST ALERT (Permintaan Uang Masuk) -->
+  <div class="modal-overlay" id="modal-incoming-request">
+    <div class="modal-content" style="max-width: 450px; text-align: center;">
+      <h3 style="font-size: 1.3rem; font-weight: 800; color: #b45309;">📩 Permintaan Dana Masuk!</h3>
+      <p style="margin: 14px 0; font-size: 0.95rem;" id="incoming-request-text">Pemain X meminta bantuan dana...</p>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-secondary" id="btn-reject-request" style="flex: 1;">❌ Tolak</button>
+        <button class="btn btn-success" id="btn-accept-request" style="flex: 1;">✅ Setujui</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: KUIS PENGETAHUAN UMUM -->
+  <div class="modal-overlay" id="modal-quiz">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <span class="quiz-category-badge" id="quiz-category">Pengetahuan Umum</span>
+          <span style="font-size: 0.75rem; color: #b45309; font-weight: 700; margin-left: 8px;" id="quiz-difficulty">Tingkat: Sedang</span>
+        </div>
+        <div style="font-weight: 800; color: #ef4444;" id="quiz-timer">⏱️ 20s</div>
+      </div>
+
+      <div class="quiz-question-text" id="quiz-question-text">
+        Pertanyaan pengetahuan umum sedang dimuat...
+      </div>
+
+      <div class="quiz-options-list" id="quiz-options-list">
+        <!-- Option buttons dynamically generated -->
+      </div>
+
+      <div class="quiz-explanation-box" id="quiz-explanation-box">
+        <div style="font-weight: 800; color: #0284c7; margin-bottom: 4px;" id="quiz-result-title">💡 Fakta & Penjelasan:</div>
+        <div id="quiz-explanation-text">...</div>
+        <div style="margin-top: 8px; font-weight: 800;" id="quiz-reward-text">...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BANK SOAL EDITOR (KHUSUS HOST) -->
+  <div class="modal-overlay" id="modal-questions-editor">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3 class="modal-title">📚 Manajemen Bank Soal Pengetahuan Umum</h3>
+        <button class="modal-close" id="btn-close-questions">&times;</button>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+        <button class="btn btn-primary" id="btn-add-new-question" style="font-size: 0.85rem; padding: 8px 14px;">
+          ➕ Tambah Soal Kustom
+        </button>
+        <button class="btn btn-secondary" id="btn-export-questions" style="font-size: 0.85rem; padding: 8px 14px;">
+          📤 Ekspor JSON
+        </button>
+        <label class="btn btn-secondary" style="font-size: 0.85rem; padding: 8px 14px; cursor: pointer;">
+          📥 Impor JSON
+          <input type="file" id="input-import-questions" accept=".json" style="display: none;">
+        </label>
+        <button class="btn btn-secondary" id="btn-reset-questions" style="font-size: 0.85rem; padding: 8px 14px;">
+          🔄 Reset Default
+        </button>
+      </div>
+
+      <div style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;" id="editor-question-list">
+        <!-- Rendered via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GAME OVER PODIUM -->
+  <div class="modal-overlay" id="modal-game-over">
+    <div class="modal-content" style="text-align: center;">
+      <h2 style="font-size: 1.6rem; font-weight: 800; color: #b45309;">🏆 PERMAINAN SELESAI</h2>
+      <p style="color: var(--text-muted); margin-top: 4px;" id="game-over-reason">Batas putaran ronde tercapai.</p>
+
+      <div class="podium-container" id="podium-steps-container"></div>
+      <div style="text-align: left; margin: 20px 0; max-height: 220px; overflow-y: auto;" id="final-leaderboard-list"></div>
+
+      <button class="btn btn-primary btn-block" id="btn-play-again">
+        🔄 Kembali ke Lobby
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/sound.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/board_data.js"></script>
+  <script src="js/game_state.js"></script>
+  <script src="js/socket.js"></script>
+  <script src="js/board_ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
